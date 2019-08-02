@@ -3,9 +3,10 @@ var _XMLHttpRequest = XMLHttpRequest;
 XMLHttpRequest = class XMLHttpRequest extends _XMLHttpRequest {
     constructor() {
         super();
-        this.hookResponseText();
-        this.hookResponse();
+        this.hookProperty("responseText", this.get_responseText);
+        this.hookProperty("response", this.get_response);
     }
+    //TODO: Seperate response from responseText. Tip: Check this.responseType
     get_response() {
         return this.responseIntercept();
     }
@@ -15,18 +16,12 @@ XMLHttpRequest = class XMLHttpRequest extends _XMLHttpRequest {
     responseIntercept() {
         delete this.response;   //Remove getter
         var modifiedResponse = XMLHttpRequest.responseModify(this.response);    //Access self.response w/o getter (due to a weird situation caused by native code)
-        this.hookResponse(); //Add getter again
+        this.hookProperty("response", this.get_response); //Add getter again
         return modifiedResponse;
     }
-    hookResponse() {
-        Object.defineProperty(this, "response", {
-            get: this.get_response,
-            configurable: true
-        });
-    }
-    hookResponseText() {
-        Object.defineProperty(this, "responseText", {
-            get: this.get_responseText,
+    hookProperty(propName="response", getterFunc=this.get_response) {
+        Object.defineProperty(this, propName, {
+            get: getterFunc,
             configurable: true
         });
     }
