@@ -37,17 +37,3 @@ XMLHttpRequest = class XMLHttpRequest extends _XMLHttpRequest {
         return resp;
     }
 }
-
-XMLHttpRequest.responseModify = function(resp) {
-    try {
-        var json = JSON.parse(resp);
-        if (json.messages) {
-            json.messages.forEach(m => m.text = "I am so cool");
-            resp = JSON.stringify(json);
-        }
-        return resp;
-    } catch (e) {
-        return resp;
-    }
-}
-
